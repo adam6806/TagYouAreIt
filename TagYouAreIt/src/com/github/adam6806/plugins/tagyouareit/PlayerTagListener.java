@@ -17,35 +17,33 @@ public class PlayerTagListener implements Listener {
 	public CommandExecutor cmd;
 
 	@EventHandler
-	public void onPlayerTag(PlayerInteractEntityEvent event) {
+	public void onPlayerTag(PlayerInteractEntityEvent event)  {
 		
 		Entity e = event.getRightClicked();
-		Player p = event.getPlayer();
-		if (e instanceof Player) {
-			//If the Player p is the person chasing
-			//and the Entity e is a player who is part
-			//of the game of tag then record the tag
-			//for use in determining the next "chaser"
-			//generate a broadcast for the tag using something
-			//like Entity e was tagged out by Player p
-			p2 = ((Player) e).getPlayer();
-			if (checkIsParticipant()) {
-				if (p == chaser) {
-					Bukkit.broadcastMessage(p2.getDisplayName() + " was tagged by " + p.getDisplayName() + ". Now " + p2.getDisplayName() + " is it!!");
-					newChaser();
-				} else p.sendMessage("You can't tag anyone because you're not it!");
-			} else p.sendMessage("You're not playing. Use /tag join to join the game.");
-			
-			p.sendMessage("You tagged " + p2.getDisplayName());
-			p2.sendMessage("You were tagged by " + p.getDisplayName());
-			
-		}
 		
+		if (e instanceof Player && ((TagCommands) cmd).getGameStarted()) {
+			
+			Player p = event.getPlayer();
+			p2 = ((Player) e).getPlayer();
+			if (checkIsParticipant(p2)) {
+				if (checkIsParticipant(p)) {
+					if (p == chaser) {
+						Bukkit.broadcastMessage(p2.getDisplayName() + " was tagged by " + p.getDisplayName() + ". Now " + p2.getDisplayName() + " is it!!");
+						p.sendMessage("You tagged " + p2.getDisplayName());
+						p2.sendMessage("You were tagged by " + p.getDisplayName());
+						newChaser();
+					} else p.sendMessage("You can't tag anyone because you're not it!");
+				} else p.sendMessage("You can't tag anyone because you're not in the game! Use /tag join.");
+			} else { 
+				p.sendMessage("That person is not playing.");
+				p2.sendMessage(p.getDisplayName() + " wants to play tag with you. Use /tag join to play.");
+			}
+		}
 	}
 	
-	public boolean checkIsParticipant() {
+	public boolean checkIsParticipant(Player p) {
 		for (int i = 0;i<participants.length;i++) {
-			if (participants[i].equals(p2)) return true;
+			if (participants[i] == p) return true;
 		}
 		return false;
 	}
@@ -72,5 +70,14 @@ public class PlayerTagListener implements Listener {
 
 	public void setParticipants(Player[] p) {
 		participants = p;
+	}
+	
+	public void removeAllEffects() {
+		for (int i = 0;i<participants.length;i++) {
+			if (participants[i] != null) {
+				participants[i].removePotionEffect(PotionEffectType.JUMP);
+				participants[i].removePotionEffect(PotionEffectType.SPEED);
+			}
+		}
 	}
 }
