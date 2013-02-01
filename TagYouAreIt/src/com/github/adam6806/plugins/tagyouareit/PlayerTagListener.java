@@ -28,15 +28,15 @@ public class PlayerTagListener implements Listener {
 			if (checkIsParticipant(p2)) {
 				if (checkIsParticipant(p)) {
 					if (p == chaser) {
-						Bukkit.broadcastMessage(p2.getDisplayName() + " was tagged by " + p.getDisplayName() + ". Now " + p2.getDisplayName() + " is it!!");
-						p.sendMessage("You tagged " + p2.getDisplayName());
-						p2.sendMessage("You were tagged by " + p.getDisplayName());
+						Bukkit.broadcastMessage(p2.getDisplayName() + "你 was tagged by " + p.getDisplayName() + ". Now " + p2.getDisplayName() + " is it!!");
+						p.sendMessage("你You tagged " + p2.getDisplayName());
+						p2.sendMessage("你You were tagged by " + p.getDisplayName());
 						newChaser();
-					} else p.sendMessage("You can't tag anyone because you're not it!");
-				} else p.sendMessage("You can't tag anyone because you're not in the game! Use /tag join.");
+					} else p.sendMessage("你You can't tag anyone because you're not it!");
+				} else p.sendMessage("你You can't tag anyone because you're not in the game! Use 呆/tag join你.");
 			} else { 
-				p.sendMessage("That person is not playing.");
-				p2.sendMessage(p.getDisplayName() + " wants to play tag with you. Use /tag join to play.");
+				p.sendMessage("你That person is not playing.");
+				p2.sendMessage(p.getDisplayName() + "你 wants to play tag with you. Use 呆/tag join你 to play.");
 			}
 		}
 	}
