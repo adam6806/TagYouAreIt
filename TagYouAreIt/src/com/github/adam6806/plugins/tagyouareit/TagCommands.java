@@ -1,6 +1,7 @@
 package com.github.adam6806.plugins.tagyouareit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,6 +31,8 @@ public class TagCommands implements CommandExecutor {
 					participants[counter] = chaser;
 					counter++;
 					currentGame = true;
+					chaser.setGameMode(GameMode.SURVIVAL);
+					chaser.setFlying(false);
 					((PlayerTagListener) tagListener).setChaser(chaser);
 					((PlayerTagListener) tagListener).setParticipants(participants);
 				} else sender.sendMessage("你There is already a game in progress. Use 呆/tag join你 to join in.");
@@ -43,6 +46,8 @@ public class TagCommands implements CommandExecutor {
 					((PlayerTagListener) tagListener).setParticipants(participants);
 					sender.sendMessage("你You have joined the current game of tag");
 					Bukkit.getServer().broadcastMessage(((Player) sender).getDisplayName() + "你 has joined the game!");
+					((Player) sender).setGameMode(GameMode.SURVIVAL);
+					((Player) sender).setFlying(false);
 				} else sender.sendMessage("你This game is full.");
 				
 			} else if (args[0].equalsIgnoreCase("start")) {
