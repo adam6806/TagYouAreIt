@@ -1,6 +1,7 @@
 package com.github.adam6806.plugins.tagyouareit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ public class PlayerTagListener implements Listener {
 	public Player chaser;
 	public Player p2;
 	public Player[] participants = new Player[20];
+	public Location[] locations = new Location[20];
 	public CommandExecutor cmd;
 
 	@EventHandler
@@ -49,6 +51,7 @@ public class PlayerTagListener implements Listener {
 	        p.removePotionEffect(PotionEffectType.JUMP);
 			p.removePotionEffect(PotionEffectType.SPEED);
 			Bukkit.broadcastMessage(p.getDisplayName() + "§A has left the game.");
+			sendBack(p);
 			if (chaser == p) {
 				((TagCommands) cmd).endGame(p);
 			}
@@ -91,6 +94,18 @@ public class PlayerTagListener implements Listener {
 			if (participants[i] != null) {
 				participants[i].removePotionEffect(PotionEffectType.JUMP);
 				participants[i].removePotionEffect(PotionEffectType.SPEED);
+			}
+		}
+	}
+
+	public void setLocations(Location[] l) {
+		locations = l;
+	}
+	
+	public void sendBack(Player p) {
+		for (int i = 0;i<participants.length;i++) {
+			if (participants[i] == p) {
+				p.teleport(locations[i]);
 			}
 		}
 	}

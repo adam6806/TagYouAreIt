@@ -2,6 +2,7 @@ package com.github.adam6806.plugins.tagyouareit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,10 +19,10 @@ public class TagCommands implements CommandExecutor {
 	public boolean gameStarted = false;
 	public int counter = 0;
 	public Listener tagListener;
+	public Location[] locations = new Location[20];
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
-			String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (commandLabel.equalsIgnoreCase("tag")) {
 			if (args.length == 0) return false;
 			if (args[0].equalsIgnoreCase("new")) {
@@ -29,10 +30,12 @@ public class TagCommands implements CommandExecutor {
 					Bukkit.getServer().broadcastMessage("你A new game of tag is starting! Use 呆/tag join你 to join in.");
 					chaser = (Player) sender;
 					participants[counter] = chaser;
+					locations[counter] = chaser.getLocation();
 					counter++;
 					currentGame = true;
 					chaser.setGameMode(GameMode.SURVIVAL);
 					chaser.setFlying(false);
+					((PlayerTagListener) tagListener).setLocations(locations);
 					((PlayerTagListener) tagListener).setChaser(chaser);
 					((PlayerTagListener) tagListener).setParticipants(participants);
 				} else sender.sendMessage("你There is already a game in progress. Use 呆/tag join你 to join in.");
@@ -42,12 +45,15 @@ public class TagCommands implements CommandExecutor {
 				else if (sender == chaser) sender.sendMessage("你You can't join a game you created silly...");
 				else if (counter < 20) {
 					participants[counter] = (Player) sender;
+					locations[counter] = ((Player) sender).getLocation();
 					counter++;
+					((PlayerTagListener) tagListener).setLocations(locations);
 					((PlayerTagListener) tagListener).setParticipants(participants);
 					sender.sendMessage("你You have joined the current game of tag");
 					Bukkit.getServer().broadcastMessage(((Player) sender).getDisplayName() + "你 has joined the game!");
 					((Player) sender).setGameMode(GameMode.SURVIVAL);
 					((Player) sender).setFlying(false);
+					((Player) sender).teleport(chaser);
 				} else sender.sendMessage("你This game is full.");
 				
 			} else if (args[0].equalsIgnoreCase("start")) {
@@ -71,20 +77,27 @@ public class TagCommands implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("quit")) {
 				if (counter > 0) {
 					if (((PlayerTagListener) tagListener).checkIsParticipant((Player) sender)) {
-						if (sender == ((PlayerTagListener) tagListener).getChaser()) {
+						if ((Player) sender == ((PlayerTagListener) tagListener).getChaser()) {
 							endGame((Player) sender);
 						} else {
 							for (int i = 0;i<participants.length;i++) {
 								if (participants[i] == sender) {
-									participants[i] = null;
 									sender.sendMessage("你You have quit the game.");
 									Bukkit.getServer().broadcastMessage(((Player) sender).getDisplayName() + " 你has quit the game.");
+									((PlayerTagListener) tagListener).sendBack((Player) sender);
+									participants[i] = null;
 									((PlayerTagListener) tagListener).setParticipants(participants);
 								}
 							}
 						}
 					} else sender.sendMessage("你You can only quit the game if you are in the game.");
 				} else sender.sendMessage("你You can only quit the game if you are in the game.");
+			} else if (args[0].equalsIgnoreCase("reset")) {
+				if (currentGame == true) {
+					if (((PlayerTagListener) tagListener).checkIsParticipant((Player) sender)) {
+						endGame((Player) sender);
+					}
+				}
 			} else return false;
 			return true;
 		}
@@ -101,10 +114,23 @@ public class TagCommands implements CommandExecutor {
 	
 	public void endGame(Player p) {
 		Bukkit.getServer().broadcastMessage("你The game has been ended by " + p.getDisplayName());
+		sendAllBack();
 		chaser = null;
 		participants = new Player[20];
+		locations = new Location[20];
 		currentGame = false;
 		counter = 0;
+		((PlayerTagListener) tagListener).setLocations(locations);
+		((PlayerTagListener) tagListener).setChaser(chaser);
+		((PlayerTagListener) tagListener).setParticipants(participants);
 		((PlayerTagListener) tagListener).removeAllEffects();
+	}
+	
+	public void sendAllBack() {
+		for (int i = 0;i<participants.length;i++) {
+			if (participants[i] != null) {
+				participants[i].teleport(locations[i]);
+			}
+		}
 	}
 }
