@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.*;
 
 public class PlayerTagListener implements Listener {
@@ -40,6 +41,18 @@ public class PlayerTagListener implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent event) {
+        Player p = event.getPlayer();
+        if (checkIsParticipant(p)) {
+	        p.removePotionEffect(PotionEffectType.JUMP);
+			p.removePotionEffect(PotionEffectType.SPEED);
+			if (chaser == p) {
+				((TagCommands) cmd).endGame(p);
+			}
+        }
+    }
 	
 	public boolean checkIsParticipant(Player p) {
 		for (int i = 0;i<participants.length;i++) {

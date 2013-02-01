@@ -58,12 +58,7 @@ public class TagCommands implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("stop")) {
 				if (!gameStarted) sender.sendMessage("你The game has not yet begun.");
 				else if (sender == ((PlayerTagListener) tagListener).getChaser()) {
-					Bukkit.getServer().broadcastMessage("你The game has been ended by " + ((PlayerTagListener) tagListener).getChaser().getDisplayName());
-					chaser = null;
-					participants = new Player[20];
-					currentGame = false;
-					counter = 0;
-					((PlayerTagListener) tagListener).removeAllEffects();
+					endGame((Player) sender);
 				} else if (((PlayerTagListener) tagListener).checkIsParticipant((Player) sender)) {
 					sender.sendMessage("你You can only stop the game if you are it.");
 				} else sender.sendMessage("你You can only stop the game if you are in the game.");
@@ -72,12 +67,7 @@ public class TagCommands implements CommandExecutor {
 				if (counter > 0) {
 					if (((PlayerTagListener) tagListener).checkIsParticipant((Player) sender)) {
 						if (sender == ((PlayerTagListener) tagListener).getChaser()) {
-							Bukkit.getServer().broadcastMessage("你The game has been ended by " + ((PlayerTagListener) tagListener).getChaser().getDisplayName());
-							chaser = null;
-							participants = new Player[20];
-							currentGame = false;
-							counter = 0;
-							((PlayerTagListener) tagListener).removeAllEffects();
+							endGame((Player) sender);
 						} else {
 							for (int i = 0;i<participants.length;i++) {
 								if (participants[i] == sender) {
@@ -102,5 +92,14 @@ public class TagCommands implements CommandExecutor {
 	
 	public boolean getGameStarted() {
 		return gameStarted;
+	}
+	
+	public void endGame(Player p) {
+		Bukkit.getServer().broadcastMessage("你The game has been ended by " + p.getDisplayName());
+		chaser = null;
+		participants = new Player[20];
+		currentGame = false;
+		counter = 0;
+		((PlayerTagListener) tagListener).removeAllEffects();
 	}
 }
