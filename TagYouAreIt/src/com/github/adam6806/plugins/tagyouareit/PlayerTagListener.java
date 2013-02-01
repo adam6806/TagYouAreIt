@@ -29,7 +29,7 @@ public class PlayerTagListener implements Listener {
 			if (checkIsParticipant(p2)) {
 				if (checkIsParticipant(p)) {
 					if (p == chaser) {
-						Bukkit.broadcastMessage(p2.getDisplayName() + "你 was tagged by " + p.getDisplayName() + ". Now " + p2.getDisplayName() + " is it!!");
+						Bukkit.broadcastMessage(p2.getDisplayName() + "你 was tagged by " + p.getDisplayName() + "你. Now " + p2.getDisplayName() + "你 is it!!");
 						p.sendMessage("你You tagged " + p2.getDisplayName());
 						p2.sendMessage("你You were tagged by " + p.getDisplayName());
 						newChaser();
@@ -48,6 +48,7 @@ public class PlayerTagListener implements Listener {
         if (checkIsParticipant(p)) {
 	        p.removePotionEffect(PotionEffectType.JUMP);
 			p.removePotionEffect(PotionEffectType.SPEED);
+			Bukkit.broadcastMessage(p.getDisplayName() + "你 has left the game.");
 			if (chaser == p) {
 				((TagCommands) cmd).endGame(p);
 			}
