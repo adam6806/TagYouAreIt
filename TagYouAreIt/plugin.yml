@@ -3,3 +3,7 @@ main: com.github.adam6806.plugins.tagyouareit.TagYouAreIt
 version: 0.1
 author: Adam Smith - PirateOfDW
 description: Allows players to play a "kick the can style" game of tag.
+commands:
+    tag:
+        description: Explains how to start a new game of tag.
+        usage: /<command> [new:join:quit:start:stop]
